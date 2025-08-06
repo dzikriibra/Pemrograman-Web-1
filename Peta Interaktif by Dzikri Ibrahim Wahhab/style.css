@@ -1,0 +1,146 @@
+/* === RESET === */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+/* === SIDEBAR === */
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: -400px;
+  width: 400px;
+  height: 100%;
+  background-color: #f8f9fa;
+  overflow-y: auto;
+  transition: left 0.3s ease;
+  z-index: 1041;
+}
+#sidebar.active {
+  left: 0;
+}
+#sidebar .closebtn {
+  position: absolute;
+  top: 5px;
+  right: 20px;
+  font-size: 30px;
+  color: #000;
+  text-decoration: none;
+}
+/* Deskripsi singkat */
+.truncate-description {
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* *1 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  line-clamp: 3; /* untuk mensupport *1 karena tidak resmi di w3c */
+}
+.sidebar-img {
+  height: 100px;
+  width: 100%;
+  object-fit: cover;
+}
+
+/* === OVERLAY === */
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1040;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+}
+#overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+/* === MAIN CONTENT === */
+#main {
+  margin-left: 0;
+  transition: margin-left 0.3s ease;
+}
+#main.shifted {
+  margin-left: 400px;
+}
+/* Navbar di atas sidebar */
+.navbar {
+  z-index: 1030;
+}
+/* Map section  */
+#map {
+  height: calc(100vh - 56px);
+  width: 100%;
+}
+
+/* === RESPONSIVE (MOBILE) === */
+@media (max-width: 576px) {
+  #sidebar {
+    width: 80vw;
+    left: -80vw;
+  }
+
+  #sidebar.active {
+    left: 0;
+  }
+
+  #main.shifted {
+    margin-left: 0; /* Jangan geser di mobile */
+  }
+}
+
+/* === UTILITIES === */
+.btn.btn-active:hover {
+  color: #fff !important;
+  background-color: #1a6d3c !important;
+}
+
+.tab-pane {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  background-color: #fff;
+}
+
+/* transisi photo */
+.carousel-image {
+  transition: opacity 0.5s ease;
+  opacity: 1;
+}
+
+.carousel-image.fade-out {
+  opacity: 0;
+}
+
+.carousel-image.fade-in {
+  opacity: 1;
+}
+
+/* eye-icons */
+#highlightBtn.active {
+  color: #1a6d3c;
+  font-weight: bold;
+}
+
+/* style add location */
+.modal-content {
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.modal-title {
+  font-weight: 600;
+}
+
+.form-label {
+  font-weight: 500;
+  font-size: 0.95rem;
+}

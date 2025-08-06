@@ -1,0 +1,82 @@
+* {
+  background-color: #171717;
+  color: #faf3e1;
+}
+
+.jumbotron {
+  padding-top: 10rem;
+  padding-bottom: 10rem;
+}
+.img-thumbnail {
+  border: 2px solid #8e71d6;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.img-thumbnail:hover {
+  border: 2px solid #8e71d6;
+  box-shadow: 0 0 10px rgb(142, 113, 214);
+  transform: scale(1.1);
+}
+
+/* @keyframes blink {
+  from,
+  to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: black;
+  }
+} */
+
+#projects {
+  color: #faf3e1;
+}
+.card-body,
+.card-text {
+  background-color: #fff;
+  color: #171717;
+}
+
+footer {
+  box-shadow: 0 0 10px rgb(142, 113, 214);
+}
+
+section {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 1s ease;
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transform-style: preserve-3d;
+  will-change: transform;
+  border: 2px solid #8e71d6;
+}
+
+.card:hover {
+  transform: scale(1.05) translateZ(10px);
+  box-shadow: 0 0 10px rgb(142, 113, 214);
+  z-index: 1;
+}
+
+.form-control {
+  border: 2px solid #8e71d6;
+}
+
+.btn-bd-primary {
+  border-color: #8e71d6;
+  color: #8e71d6;
+}
+.btn-bd-primary:hover {
+  background-color: #8e71d6;
+  color: #faf3e1;
+}

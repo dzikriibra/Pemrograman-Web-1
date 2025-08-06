@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wheatstone Maps</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Overlay -->
+    <div id="overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <div id="sidebar">
+      <div class="d-flex justify-content-between align-items-center border-bottom">
+        <h5 class="fw-semibold px-3 py-3 mb-0">Explore History</h5>
+        <a href="javascript:void(0)" class="text-decoration-none fs-1 text-dark px-3" onclick="toggleSidebar()">&times;</a>
+      </div>
+
+      <!-- Search -->
+      <div class="p-3 pt-2 pb-1">
+        <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Cari destinasi..." />
+      </div>
+
+      <!-- Container destinasi -->
+      <div id="history-container" class="px-3 pb-4">
+        <!-- Card destinasi akan muncul di sini -->
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main">
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-lg bg-success navbar-dark">
+        <div class="container-fluid">
+          <a class="navbar-brand fs-6" href="#">WMaps</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <!-- about -->
+              <li class="nav-item">
+                <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#exampleModal"> <i class="bi bi-info-circle me-1"></i>About</a>
+              </li>
+
+              <!-- tools -->
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"> <i class="bi bi-tools"></i> Tools</a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a class="dropdown-item" id="locateMeBtn" type="button"><i class="bi bi-geo-alt-fill"></i> Locate Me</a>
+                  </li>
+
+                  <li>
+                    <button class="dropdown-item" type="button" id="addLocationBtn" data-bs-toggle="modal" data-bs-target="#addLocationModal"><i class="bi bi-plus-circle"></i> Add Location</button>
+                  </li>
+
+                  <li>
+                    <button class="dropdown-item" id="highlightBtn" type="button"><i id="highlightIcon" class="bi bi-eye-fill"></i> Highlight Visited Places</button>
+                  </li>
+                </ul>
+              </li>
+
+              <!-- sidebar list -->
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:void(0)" onclick="toggleSidebar()"> <i class="bi bi-list"></i> History</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Modal Add Location -->
+      <div class="modal fade" id="addLocationModal" tabindex="-1" aria-labelledby="addLocationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form id="addLocationForm">
+              <div class="modal-header">
+                <h5 class="modal-title" id="addLocationModalLabel">Add New Location</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label for="nama" class="form-label">Nama Lokasi</label>
+                  <input type="text" class="form-control" id="nama" required />
+                </div>
+                <div class="mb-3">
+                  <label for="deskripsi" class="form-label">Deskripsi</label>
+                  <textarea class="form-control" id="deskripsi" rows="3" required></textarea>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="latitude" class="form-label">Latitude</label>
+                    <input type="number" step="any" class="form-control" id="latitude" required />
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="longitude" class="form-label">Longitude</label>
+                    <input type="number" step="any" class="form-control" id="longitude" required />
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn bg-success text-light">Tambah Lokasi</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal About -->
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5 ms-3 mt-2" id="exampleModalLabel">Tentang Peta Perjalanan Saya</h1>
+              <button type="button" class="btn-close mt-1 me-2" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Button Tabs -->
+            <div class="d-flex flex-column flex-md-row justify-content-evenly gap-2 mb-3 mt-3" role="tablist">
+              <button class="btn btn-active" id="tab-deskripsi" data-bs-toggle="pill" data-bs-target="#content-deskripsi" type="button" role="tab"><i class="bi bi-map me-2"></i> Deskripsi</button>
+
+              <button class="btn btn-active" id="tab-teknologi" data-bs-toggle="pill" data-bs-target="#content-teknologi" type="button" role="tab"><i class="bi bi-wrench-adjustable-circle me-2"></i> Perangkat</button>
+
+              <button class="btn btn-active" id="tab-panduan" data-bs-toggle="pill" data-bs-target="#content-panduan" type="button" role="tab"><i class="bi bi-question-circle me-2"></i> Panduan</button>
+
+              <button class="btn btn-active" id="tab-profil" data-bs-toggle="pill" data-bs-target="#content-profil" type="button" role="tab"><i class="bi bi-person-circle me-2"></i> Profil</button>
+            </div>
+
+            <!-- Tab Content Placeholder -->
+            <div class="tab-content" id="pills-tabContent">
+              <!-- deskripsi -->
+              <div class="tab-pane fade show active mt-2 ms-4 me-4" id="content-deskripsi" role="tabpanel">
+                <h4><i class="bi bi-map ms-1 me-2"></i>Deskripsi Aplikasi</h4>
+                <p>Aplikasi ini dibuat sebagai bagian dari tugas akhir mata kuliah <i>Pemrograman Web</i>. Fungsinya adalah menampilkan peta interaktif yang menunjukkan tempat-tempat yang pernah dikunjungi.</p>
+                <p>
+                  Walaupun awalnya hanya untuk memenuhi tugas kuliah, aplikasi ini dirancang dengan potensi untuk dikembangkan lebih lanjut sebagai bagian dari portofolio proyek pribadi. Dengan desain responsif dan antarmuka yang sederhana,
+                  aplikasi ini diharapkan menjadi contoh nyata dari pemanfaatan teknologi web modern dalam membangun fitur berbasis peta.
+                </p>
+              </div>
+
+              <!-- tools -->
+              <div class="tab-pane fade ms-4 me-4" id="content-teknologi" role="tabpanel">
+                <div class="content-box mt-2">
+                  <h4><i class="bi bi-wrench-adjustable-circle me-2"></i>Perangkat yang Digunakan:</h4>
+                  <ul>
+                    <li><strong>HTML</strong> – Untuk struktur dasar halaman web.</li>
+                    <li><strong>CSS</strong> – Untuk mengatur tampilan dan layout halaman.</li>
+                    <li><strong>JavaScript</strong> – Untuk logika interaktif, termasuk pengolahan data dan efek animasi.</li>
+                    <li><strong>Bootstrap</strong> – Framework CSS untuk responsif layout dan elemen UI seperti tombol, grid, dll.</li>
+                    <li><strong>Leaflet.js</strong> – Library peta interaktif untuk menampilkan lokasi-lokasi yang dikunjungi.</li>
+                    <li><strong>Data Statis (JavaScript)</strong> – Menyimpan daftar tempat yang dikunjungi langsung di file JS tanpa database.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Panduan -->
+              <div class="tab-pane fade ms-4 me-4" id="content-panduan" role="tabpanel">
+                <h4><i class="bi bi-question-circle me-2"></i>Panduan Penggunaan Peta</h4>
+
+                <p class="small text-muted mb-4">
+                  Dokumen ini menjelaskan cara berinteraksi dengan peta interaktif, mulai dari navigasi dasar hingga fitur‑fitur lanjutan. Aplikasi ini bersifat statis untuk keperluan tugas Pemrograman Web, namun arsitekturnya dirancang
+                  agar mudah dikembangkan lebih lanjut.
+                </p>
+
+                <!-- NAVBAR OVERVIEW -->
+                <h6 class="mt-3"><i class="bi bi-layout-text-sidebar-reverse me-2"></i>Struktur Navigasi</h6>
+                <ul class="ps-3 mb-4">
+                  <li><strong>About</strong>: Berisi deskripsi proyek, teknologi yang dipakai, panduan (halaman ini), dan profil pengembang.</li>
+                  <li><strong>Tools</strong>: Kumpulan utilitas—<em>Locate Me</em>, <em>Add Location</em>, dan <em>Highlight Visited Places</em>.</li>
+                  <li><strong>History</strong>: Membuka sidebar yang memuat daftar destinasi dalam bentuk kartu.</li>
+                </ul>
+
+                <!-- PETA & NAVIGASI DASAR -->
+                <h6 class="mt-3"><i class="bi bi-map me-2"> </i>Navigasi Peta</h6>
+                <ol class="ps-3 mb-4">
+                  <li>Gunakan <em>scroll</em> atau gerakan cubit untuk memperbesar/memperkecil.</li>
+                  <li>Klik‑dan‑seret (drag) untuk menggeser tampilan.</li>
+                  <li>Klik penanda (<em>marker</em>) untuk melihat detail singkat tempat.</li>
+                </ol>
+
+                <!-- TOOLS -->
+                <h6 class="mt-3"><i class="bi bi-wrench-adjustable-circle me-2"></i>Fitur Tools</h6>
+                <ul class="ps-3 mb-4">
+                  <li><i class="bi bi-crosshair me-1"></i><strong>Locate Me</strong> – Memusatkan peta ke posisi pengguna (meminta izin lokasi).</li>
+                  <li><i class="bi bi-pin-map me-1"></i><strong>Add Location</strong> – Membuka formulir untuk menambahkan destinasi baru (nama, deskripsi, koordinat).</li>
+                  <li><i class="bi bi-highlighter me-1"></i><strong>Highlight Visited Places</strong> – Menyorot seluruh tempat yang telah ditandai sebagai “pernah dikunjungi”.</li>
+                </ul>
+
+                <!-- HISTORY SIDEBAR -->
+                <h6 class="mt-3"><i class="bi bi-clock-history me-2"></i>History Sidebar</h6>
+                <p class="mb-1">Sidebar menampilkan daftar destinasi dalam format kartu horizontal:</p>
+                <ul class="ps-3 mb-4">
+                  <li>Gambar pratinjau, nama destinasi, dan ringkasan singkat.</li>
+                  <li>Kolom pencarian di bagian atas untuk memfilter destinasi secara real‑time.</li>
+                  <li>Klik kartu untuk menyorot lokasi yang bersangkutan di peta (dapat dikembangkan lebih lanjut).</li>
+                </ul>
+
+                <!-- BEST PRACTICES -->
+                <h6 class="mt-3"><i class="bi bi-lightbulb me-2"></i>Tips Penggunaan Efisien</h6>
+                <ul class="ps-3">
+                  <li>Gunakan <strong>Locate Me</strong> sebelum menambah lokasi baru agar koordinat lebih akurat.</li>
+                  <li>Manfaatkan fitur pencarian untuk menemukan destinasi dengan cepat saat daftar menjadi panjang.</li>
+                  <li>Saat menambahkan deskripsi, usahakan ringkas (≤ 3 baris) agar tampilan kartu tetap rapi.</li>
+                </ul>
+                <!-- ===== END PANDUAN ===== -->
+              </div>
+
+              <!-- Profil -->
+              <div class="tab-pane fade ms-4 me-4" id="content-profil" role="tabpanel">
+                <div class="content-box mt-2">
+                  <h4><i class="bi bi-person-circle me-2"></i>Profil Pengembang</h4>
+                  <p>
+                    Perkenalkan, saya <strong>Dzikri Ibrahim Wahhab</strong>, seorang mahasiswa Informatika dari Universitas Informatika dan Bisnis Indonesia (UNIBI). Perjalanan saya di dunia teknologi dimulai bukan dari rasa tahu yang luar
+                    biasa, tapi dari rasa penasaran sederhana: "Bagaimana peta di layar bisa tahu posisi kita?"
+                  </p>
+                  <p>
+                    Dari situlah semuanya bermula. Perlahan saya belajar HTML, CSS, dan JavaScript. Saya tidak pernah menganggap ini mudah — justru itulah yang membuatnya menarik. Setiap bug adalah teka-teki, setiap baris kode adalah bagian
+                    dari cerita saya memahami dunia digital.
+                  </p>
+                  <p>
+                    Proyek peta interaktif ini bukan hanya tugas. Ini adalah cerminan bagaimana saya belajar beradaptasi, mencoba, dan memahami teknologi dari sudut pandang pengguna dan pengembang. Karena bagi saya, prinsip hidupnya
+                    sederhana: <em>"adaptasi atau mati."</em>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Map -->
+      <div id="map"></div>
+    </div>
+
+    <!-- Scripts Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Scripts Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- My Script -->
+    <script src="javascript/script.js"></script>
+    <script src="javascript/setDataStatis.js"></script>
+  </body>
+</html>
